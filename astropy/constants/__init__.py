@@ -128,7 +128,6 @@ def set_enabled_constants(modname):
             warnings.simplefilter('ignore')
             _utils._set_c(codata, iaudata, module,
                           not_in_module_only=False, set_class=True)
-            del codata_context, iaudata_context
 
 
 # These imports are used by other astropy modules
