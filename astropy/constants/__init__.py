@@ -17,18 +17,10 @@ import inspect
 import warnings
 from contextlib import contextmanager
 
-# Hack to make circular imports with units work
-try:
-    from astropy import units
-    del units
-except ImportError:
-    pass
-
 import astropy.config as _config
 
-from . import utils as _utils
 
-
+# Note: this definition has to happen before the following imports!
 class Conf(_config.ConfigNamespace):
     """
     Configuration parameters for `astropy.constants`.
@@ -44,26 +36,21 @@ class Conf(_config.ConfigNamespace):
 
 conf = Conf()
 
-if ((conf.physical_constants == 'codata2014') or
-        (conf.physical_constants == 'astropyconst20')):
-    from . import codata2014 as codata
-elif ((conf.physical_constants == 'codata2010') or
-        (conf.physical_constants == 'astropyconst13')):
-    from .astropyconst13 import codata2010 as codata
-else:
-    raise ValueError('Invalid physical constants version: {}'
-                     .format(conf.physical_constants))
+# Hack to make circular imports with units work
+try:
+    from astropy import units
+    del units
+except ImportError:
+    pass
 
-if ((conf.astronomical_constants == 'iau2015') or
-        (conf.astronomical_constants == 'astropyconst20')):
-    from . import iau2015 as iaudata
-elif ((conf.astronomical_constants == 'iau2012') or
-        (conf.astronomical_constants == 'astropyconst13')):
-    from .astropyconst13 import iau2012 as iaudata
-else:
-    raise ValueError('Invalid astronomical constants version: {}'
-                     .format(conf.astronomical_constants))
 
+# These imports are used by other astropy modules
+from .constant import Constant, EMConstant  # noqa
+from . import si  # noqa
+from . import cgs  # noqa
+from .config import codata, iaudata
+
+from . import utils as _utils
 
 # for updating the constants module docstring
 _lines = [
@@ -103,6 +90,7 @@ def set_enabled_constants(modname):
 
     # Re-import here because these were deleted from namespace on init.
     import inspect
+    import warnings
     from . import utils as _utils
 
     # NOTE: Update this whenever versions are added.
@@ -130,14 +118,9 @@ def set_enabled_constants(modname):
                           not_in_module_only=False, set_class=True)
 
 
-# These imports are used by other astropy modules
-from .constant import Constant, EMConstant  # noqa
-from . import si  # noqa
-from . import cgs  # noqa
-
-
 # Clean up namespace
 del inspect
+del warnings
 del contextmanager
 del _utils
 del _lines
