@@ -52,7 +52,7 @@ elif ((conf.physical_constants == 'codata2010') or
     from .astropyconst13 import codata2010 as codata
 else:
     raise ValueError('Invalid physical constants version: {}'
-                     .format(conf.astronomical_constants))
+                     .format(conf.physical_constants))
 
 if ((conf.astronomical_constants == 'iau2015') or
         (conf.astronomical_constants == 'astropyconst20')):
